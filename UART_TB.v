@@ -118,7 +118,7 @@ endmodule
 
 `timescale 1ns/1ps
 
-module UART_TOP_tb;
+module UART_TB;
 
   // Inputs
   reg clk;
@@ -166,7 +166,7 @@ module UART_TOP_tb;
   initial begin
     // Initialize inputs
     clk = 0;
-    rst_n = 0;
+    rst_n = 1;
     mode = 0;
     i_TX_DV = 0;
     tx_byte = 8'h00;
@@ -174,20 +174,21 @@ module UART_TOP_tb;
 
     // Apply reset
     #100;
-    rst_n = 1;
-
+    rst_n = 0;
     // Wait for reset de-assertion
     #100;
+    rst_n = 1;
+    #10;
 
     // ------------ Manual Mode ------------
-    mode = 0;
-    $display("Manual Mode: Sending byte 0x55");
-    send_byte(8'h55);
+    //mode = 0;
+    //$display("Manual Mode: Sending byte 0x55");
+    //send_byte(8'h55);
 
-    wait (o_RX_DV == 1);
-    $display("Received Byte: %h | SAR_Tx: %d | SAR_Rx: %d", rx_byte, o_SAR_Tx, o_SAR_Rx);
+    //wait (o_RX_DV == 1);
+    //$display("Received Byte: %h | SAR_Tx: %d | SAR_Rx: %d", rx_byte, o_SAR_Tx, o_SAR_Rx);
 
-    #50000;
+    //#50000;
 
     // ------------ Test Mode (BIST) ------------
     mode = 1;
@@ -198,19 +199,20 @@ module UART_TOP_tb;
 
     wait (o_RX_DV == 1);
     $display("Received Byte: %h | SAR_Tx: %d | SAR_Rx: %d", rx_byte, o_SAR_Tx, o_SAR_Rx);
+    #5000;
     end
-    #50000;
-
+    //#50000;
+    $display("Received Byte: %h | SAR_Tx: %d | SAR_Rx: %d", rx_byte, o_SAR_Tx, o_SAR_Rx);
     $display("Simulation completed.");
     $finish;
   end
 
   initial
   begin
-    $dumpvars();
-    $dumpfile("uart_top.vcd");
+    $dumpfile("dump.vcd");
+    $dumpvars(0, UART_TB);
+    //$dumpvars(1, UART_TX_INST);
+    //$dumpvars(1, UART_RX_INST);
     end
 
 endmodule
-
-
